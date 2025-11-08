@@ -10,56 +10,43 @@ class AppConfig {
 
 }
 
+
 public class Main {
 
-    private static Scanner scanner = new Scanner(System.in);
+    public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
         AppConfig conf = ParseArgs(new ArrayList<String>(Arrays.asList(args)));
 
-        // Server and client code
-        if(conf.IsServer)
+        try
         {
-            ChatServer server = new ChatServer();
-            try
-            {
-                server.start(conf.port);
-            }
-            catch(Exception e)
-            {
-                System.err.println(e.getMessage());
-                return;
-            }
-            finally {
-                server.stop();
-            }
-        }
-        else
-        {
-            ChatClient client = new ChatClient();
-            try
-            {
-                client.start(conf.serverAddress, conf.port);
-
-                for(;;)
-                {
-                    System.out.print("Write a Message: ");
-                    String str = scanner.nextLine();
-
-                    client.sendMessage(str);
-
-                    if("\\quit".equals(str)) break;
+            // Server and client code
+            if(conf.IsServer) {
+                ChatServer server = new ChatServer();
+                try {
+                    server.start(conf.port);
+                }
+                finally {
+                    server.stop();
                 }
             }
-            catch(Exception e)
+            else
             {
-                System.err.println(e.getMessage());
-                return;
+                ChatClient client = new ChatClient();
+                try
+                {
+                    client.start(conf.serverAddress, conf.port);
+                }
+                finally {
+                    client.stop();
+                }
             }
-            finally {
-                client.stop();
-            }
+
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
         }
 
     }
@@ -89,7 +76,7 @@ public class Main {
             System.exit(1);
             return null; // Should never be returned
         }
-
-
     }
+
+
 }
